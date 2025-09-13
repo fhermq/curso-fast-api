@@ -1,5 +1,5 @@
 from typing import Annotated
-from pydantic import AfterValidator, BaseModel
+from pydantic import AfterValidator, BaseModel, field_validator
 
 # After: se ejecuta despues de validaciones/transformaciones de pydantic
 # Before: se ejecuta antes de validaciones/transformaciones de pydantic
@@ -29,5 +29,20 @@ class Model2(BaseModel):
 
 class Model3(BaseModel):
     lista_pares: list[NumeroPar]
-ejemplo3: Model3 = Model3(lista_pares=[-100,6,10])
-print(ejemplo3)
+#ejemplo3: Model3 = Model3(lista_pares=[-100,6,10])
+#print(ejemplo3)
+
+
+# =========== Usando DECORATOR ===============#
+
+class Item(BaseModel):
+    item_id: int
+    price: float
+
+    @field_validator("item_id", "price", mode="after")
+    def check_positive(cls,value:int | float):
+        if value < 0:
+            raise ValueError("Item debe ser positivo")
+        return value
+    
+banana = Item = Item(item_id=2, price=2.7)
